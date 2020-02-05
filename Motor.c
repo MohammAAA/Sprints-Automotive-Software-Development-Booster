@@ -68,7 +68,7 @@ void Motor_State (uint8 Motor_n, uint8 Motor_state)
 	}
 }
 
-void Motor_Turn_Left()
+void Motor_Turn_Left(void)
 {
 // assuming motor 1 is on the left side
 
@@ -81,10 +81,19 @@ void Motor_Turn_Left()
 
 }
 	
-void Motor_Turn_Right()
+void Motor_Turn_Right(void)
 {
 	Motor_State (MOTOR_1, FORWARD);
 	Motor_State (MOTOR_2, STOP);
+	Motor_Speed_Control (MOTOR_1, MAX_SPEED);
+	Motor_Speed_Control (MOTOR_2, MAX_SPEED);
+
+}
+
+void Motor_Move_Forward(void)
+{
+	Motor_State (MOTOR_1, FORWARD);
+	Motor_State (MOTOR_2, FORWARD);
 	Motor_Speed_Control (MOTOR_1, MAX_SPEED);
 	Motor_Speed_Control (MOTOR_2, MAX_SPEED);
 
