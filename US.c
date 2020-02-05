@@ -18,17 +18,30 @@ void US_Init(uint8 Timer_Select)
 {
 	Timer_init (Timer_Select, OF_INT);
 	GPIO_Direction(PORTA, 1, OUTPUT);
+	GPIO_Direction(PORTA, 6, OUTPUT);
 	SETBIT(SREG,7);  //Enable Global INT
 	SETBIT(GICR,5); //External INT2 Activation // General Interrupt control register
 }
 
-void US_Start (void){
-
-	GPIO_Set_Value(PORTA,1, HIGH); // sending 10us pulse
-	SETBIT(MCUCSR,6); // configuring INT2 to be +ve edge triggered
-	_delay_ms(200);
-	CLRBIT(PORTA,1); //GPIO_Set_Value(PORTA,1, LOW);
-	while (int_flag == 0);
+void US_Start (uint8 US_Select){
+	switch (US_Select){
+		case US_FRONT:
+		GPIO_Set_Value(PORTA,1, HIGH); // sending 10us pulse
+		SETBIT(MCUCSR,6); // configuring INT2 to be +ve edge triggered
+		_delay_ms(200);
+		CLRBIT(PORTA,1); //GPIO_Set_Value(PORTA,1, LOW);
+		while (int_flag == 0);
+		break;
+			
+		case US_SIDE:
+		GPIO_Set_Value(PORTA,6, HIGH); // sending 10us pulse
+		SETBIT(MCUCSR,6); // configuring INT2 to be +ve edge triggered
+		_delay_ms(200);
+		CLRBIT(PORTA,6); //GPIO_Set_Value(PORTA,1, LOW);
+		while (int_flag == 0);
+		break;
+	}
+		
 }
 
 ISR (__vector_3)
