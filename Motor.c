@@ -68,6 +68,28 @@ void Motor_State (uint8 Motor_n, uint8 Motor_state)
 	}
 }
 
+void Motor_Turn_Left()
+{
+// assuming motor 1 is on the left side
+
+	Motor_State (MOTOR_1, STOP);
+	Motor_State (MOTOR_2, FORWARD);
+	Motor_Speed_Control (MOTOR_1, MAX_SPEED);
+	Motor_Speed_Control (MOTOR_2, MAX_SPEED);
+
+
+
+}
+	
+void Motor_Turn_Right()
+{
+	Motor_State (MOTOR_1, FORWARD);
+	Motor_State (MOTOR_2, STOP);
+	Motor_Speed_Control (MOTOR_1, MAX_SPEED);
+	Motor_Speed_Control (MOTOR_2, MAX_SPEED);
+
+}
+
 void Motor_Speed_Control (uint8 Motor_n, uint16 Speed)
 {
 	if (MAX_SPEED == Speed)
@@ -86,3 +108,4 @@ void Motor_Speed_Control (uint8 Motor_n, uint16 Speed)
 	}
 	else{}
 }
+
