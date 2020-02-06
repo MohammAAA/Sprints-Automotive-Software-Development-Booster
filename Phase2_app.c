@@ -10,7 +10,8 @@ uint8 Ob_Removed		= 0;
 uint16 Total_Reading	= 0;
 uint16 Avarage_Reading	= 0;
 uint16 US_Reading		= 0;
-extern volatile uint16 Distance;
+extern volatile uint16 Distance_Front;
+extern volatile uint16 Distance_Side;
 
 /*
 	Requests two readings from Ultrasonic then return the avarage
@@ -24,7 +25,7 @@ uint16 US_Get_Avarage_Reading (void)
 		//if synchronous then a return value is given
 		US_Start();
 		
-		New_Reading = Distance;
+		New_Reading = Distance_Front;
 		Total_Reading += New_Reading;
 		Avarage_Reading = Total_Reading/i;
 	}
@@ -39,7 +40,7 @@ uint16 US_Get_Avarage_Reading (void)
 */
 void Get_New_Phase_Info(void)
 {
-	First_Reading = Distance;
+	First_Reading = Distance_Front;
 			
 	if (Total_Distance == 400)
 	{
@@ -58,7 +59,7 @@ void Get_New_Phase_Info(void)
 */
 void Check_Distance_Change(void)
 {
-	US_Reading = Distance;
+	US_Reading = Distance_Front;
 	// neglecting the effect of obstacle removal
 	if (US_Reading >= 200)
 	{
