@@ -1,5 +1,5 @@
 //#include "Phase2_app.h"
-#define F_CPU 8000000ul
+#define F_CPU 16000000
 #include <avr/delay.h>
 #include "Motor.h"
 #include "GPIO.h"
@@ -13,13 +13,16 @@
 
 
 int main(void)
-{		
-
+{
+// modified
 Motor_Init();
+//added
+while (1){
 Motor_State(MOTOR_1,FORWARD);
 Motor_State(MOTOR_2,FORWARD);
 	Motor_Speed_Control(MOTOR_1,100);
 	Motor_Speed_Control(MOTOR_2,100);
+}
 return 0;
 }
 
