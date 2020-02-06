@@ -15,6 +15,4 @@ void US_Start (uint8);
 #define US_FRONT 1
 #define US_SIDE 2
 
-#define 
-
 #endif
