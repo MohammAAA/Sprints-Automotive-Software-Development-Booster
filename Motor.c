@@ -13,6 +13,10 @@ void Motor_Init (void)
 	GPIO_Direction(PORT__D,PIN_2B,OUTPUT);
 	GPIO_Direction(PORT__D,PIN_1EN,OUTPUT);
 	GPIO_Direction(PORT__D,PIN_2EN,OUTPUT);
+
+	//added
+	GPIO_Set_Value (PORT__D,PIN_1EN,HIGH);
+	GPIO_Set_Value (PORT__D,PIN_2EN,HIGH);
 }
 
 // change motor1/motor2 states to one of those
