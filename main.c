@@ -16,12 +16,31 @@ int main(void)
 {
 // modified
 Motor_Init();
+
+//added
+PWM_Init();
+Set_PWM_Prescaling_Value(1024);
+
+
 //added
 while (1){
 Motor_State(MOTOR_1,FORWARD);
 Motor_State(MOTOR_2,FORWARD);
 	Motor_Speed_Control(MOTOR_1,100);
 	Motor_Speed_Control(MOTOR_2,100);
+	_delay_ms(3000);
+
+	Motor_Speed_Control(MOTOR_1,0);
+	Motor_Speed_Control(MOTOR_2,0);
+	_delay_ms(3000);
+
+	Motor_Speed_Control(MOTOR_1,20);
+	Motor_Speed_Control(MOTOR_2,20);
+	_delay_ms(3000);
+
+	Motor_Speed_Control(MOTOR_1,0);
+	Motor_Speed_Control(MOTOR_2,0);
+	_delay_ms(3000);
 }
 return 0;
 }
