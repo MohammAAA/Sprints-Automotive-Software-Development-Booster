@@ -102,15 +102,10 @@ extern void GPIO_Set_Value(uint8 Port ,uint8 Copy_u8PinNum, uint8 Copy_u8PinValu
 	}
 }
 
-
-//added
 uint8 GPIO_Read(uint8 Port, uint8 PinNum) {
 return GET_BIT(Port, PinNum);
 }
 
-
-
-// added
 
 void Enable_INT(void)
 {
