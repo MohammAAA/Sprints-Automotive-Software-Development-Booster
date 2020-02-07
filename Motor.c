@@ -10,6 +10,9 @@ void Motor_Init (void)
 	GPIO_Direction(PORT__D,PIN_2B,OUTPUT);
 	GPIO_Direction(PORT__D,PIN_1EN,OUTPUT);
 	GPIO_Direction(PORT__D,PIN_2EN,OUTPUT);
+	//GPIO_Set_Value (PORT__D,PIN_1EN,HIGH);
+	//GPIO_Set_Value (PORT__D,PIN_2EN,HIGH);
+
 }
 
 void Motor_State (uint8 Motor_n, uint8 Motor_state)
@@ -20,6 +23,8 @@ void Motor_State (uint8 Motor_n, uint8 Motor_state)
 		{
 			GPIO_Set_Value (PORT__D,PIN_1A,LOW);
 			GPIO_Set_Value (PORT__D,PIN_1B,HIGH);
+
+
 		}
 		else{}
 
