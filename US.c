@@ -47,7 +47,8 @@ void US_Init(uint8 Timer_Select)
 void US_Start (uint8 US_Select){
 	if (US_Select == US_FRONT){
 		US_Number = US_FRONT;
-				SETBIT (PORTA, 1); //GPIO_Set_Value(PORTA,1, HIGH); // start sending 10us pulse
+				SETBIT (PORTA, 1); // start sending 10us pulse for the US_FRONT
+				CLRBIT (PORTA, 6); //make sure the US_SIDE is off
 				SETBIT(MCUCSR,6); // configuring INT2 to be +ve edge triggered
 				_delay_ms(20);
 				CLRBIT (PORTA, 1); //GPIO_Set_Value(PORTA,1, LOW); //ending pulse
@@ -55,7 +56,8 @@ void US_Start (uint8 US_Select){
 	}
 	else if (US_Select == US_SIDE){
 		US_Number = US_FRONT;
-				GPIO_Set_Value(PORTA,6, HIGH); // start sending 10us pulse
+				GPIO_Set_Value(PORTA,6, HIGH); // start sending 10us pulse for the US_SIDE
+				CLRBIT (PORTA, 6); //make sure the US_FRONT is off
 				SETBIT(MCUCSR,6); // configuring INT2 to be +ve edge triggered
 				_delay_ms(20);
 				GPIO_Set_Value(PORTA,6, LOW); //ending pulse
