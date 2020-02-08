@@ -1,15 +1,25 @@
+
+/* Timers 0 & 2 Driver 
+** TCCRx: Configuration registers
+** TIMSK: mask register for interrupts
+*/
+
 #include "Timers.h"
 
-//overflow counters
-//uint16 overflows_0;
-//uint16 overflows_2;
 extern uint8 flag_timer ;
 
+
+/* This function specifies the Timerx prescaler 
+** Pre-conditions: Timerx is initialized
+** Post-conditions: Timerx prescaler is set
+** Input arguments: Timer number, prescaling value
+** Return: None
+*/
 void Timer_Set_Prescaler(uint8 Timer_Select, uint16 Timer_Prescaler)
 {
 	switch (Timer_Select)
 	{
-		case 0:			// Timer 0 is selected
+		case 0:	 // Timer 0 is selected
 
 		switch (Timer_Prescaler)
 		{
@@ -42,7 +52,7 @@ void Timer_Set_Prescaler(uint8 Timer_Select, uint16 Timer_Prescaler)
 
 
 
-		case 2:			// Timer 2 is selected
+		case 2:	// Timer 2 is selected
 		switch (Timer_Prescaler)
 		{
 			case PRE_1:
@@ -79,8 +89,12 @@ void Timer_Set_Prescaler(uint8 Timer_Select, uint16 Timer_Prescaler)
 }
 
 
-///////should get the prescaler out??? "new function:: start timer"
-//modified
+/* This function initializes the timer 
+** Pre-conditions: None
+** Post-conditions: Timer is initialzed and ready to operate
+** Input arguments: Timer number, state whether overflow, compare match or no interrupt
+** Return: None
+*/
 void Timer_init (uint8 Timer_Select, uint8 Interrupt_Activation)
 {
 	switch (Timer_Select)
@@ -135,7 +149,7 @@ void Timer_init (uint8 Timer_Select, uint8 Interrupt_Activation)
 }
 
 
-//added
+
 int Timer_read_flags (uint8 Timer_Select, uint8 Flag_ToCheck)
 {
 
