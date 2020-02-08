@@ -1,3 +1,6 @@
+
+/* Ultrasonic sensor driver*/
+
 #define F_CPU 16000000
 #include "types.h"
 #include "GPIO.h"
@@ -17,6 +20,13 @@ volatile uint16 Distance_Side =0;
 
 ISR (__vector_3);
 
+
+/* Initialize the ultrasonic sensor 
+** Pre-conditions: None
+** Post-conditions: ultrasonic is initialized
+** Input arguments: specification of the timer which will operate with the US
+** Return: None
+*/
 void US_Init(uint8 Timer_Select)
 {
 	Timer_init (Timer_Select, OF_INT);
@@ -26,6 +36,14 @@ void US_Init(uint8 Timer_Select)
 	SETBIT(GICR,5); //External INT2 Activation // General Interrupt control register
 }
 
+
+
+/* Start operating the ultrasonic sensor 
+** Pre-conditions: Ultrasonic is initialized
+** Post-conditions: ultrasonic is started and the distance value is updated with a new one
+** Input arguments: selection of the ultrasonic sensor
+** Return: None
+*/
 void US_Start (uint8 US_Select){
 	if (US_Select == US_FRONT){
 		US_Number = US_FRONT;
@@ -45,6 +63,15 @@ void US_Start (uint8 US_Select){
 	}
 }
 
+
+
+
+/* external interrupt service routine
+** Pre-conditions: the external interrupt pin senses a +ve edge or -ve edge echo signal
+** Post-conditions: timer reset & distance value is updated
+** Input arguments: None
+** Return: None
+*/
 ISR (__vector_3)
 {
 int_flag = 0;
