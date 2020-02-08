@@ -87,6 +87,23 @@ void Motor_State (uint8 Motor_n, uint8 Motor_state)
 	}
 }
 
+void Motor_Turn_Left(void)
+{
+	Motor_State (MOTOR_1, STOP);
+	Motor_State (MOTOR_2, FORWARD);
+	Motor_Speed_Control (MOTOR_1, 90);
+	Motor_Speed_Control (MOTOR_2, 90);
+}
+
+void Motor_Turn_Right(void)
+{
+	Motor_State (MOTOR_1, FORWARD);
+	Motor_State (MOTOR_2, STOP);
+	Motor_Speed_Control (MOTOR_1, 90);
+	Motor_Speed_Control (MOTOR_2, 90);
+}
+
+
 
 /* This function controls the motor speed by the use of the PWM 
 ** Pre-conditions: motor is initialized and its state is defined and updated
