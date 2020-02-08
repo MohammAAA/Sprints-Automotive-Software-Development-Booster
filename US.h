@@ -5,7 +5,6 @@
 
 void US_Init(uint8 Timer_Select);
 void US_Start (uint8 US_Select);
-//uint16 US_Get_Distance (void);
 
 #define POSITIVE_EDGE 1
 #define NEGATIVE_EDGE 0
