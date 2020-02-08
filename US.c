@@ -1,160 +1,146 @@
+
+/* Ultrasonic sensor driver*/
+
+#define F_CPU 16000000
 #include "types.h"
 #include "GPIO.h"
 #include <util/delay.h>
-#include <stdio.h>
-
 #include "Timers.h"
 #include "US.h"
+
+volatile uint8 US_Number =0;
 volatile uint8 int_flag =0;
+volatile uint8 positive_edge_flag = 1; //positive edge trigger indicator
+volatile uint8 flag_timer = 0; // if =0 so timer 0 is used ,, if =2 then timer 2 is used
 volatile uint16 overflows_0;
 volatile uint16 overflows_2;
-volatile uint8 flag = 1; //positive edge trigger indicator
-volatile uint8 flag_timer = 0; // if =0 so timer 0 is used ,, if =2 then timer 2 is used
-volatile uint16 Distance =0;
-volatile uint16 temp = 0;
-volatile uint16 bta3 = 0;
+volatile uint16 Distance_Front =0;
+volatile uint16 Distance_Side =0;
+
 
 ISR (__vector_3);
 
+
+/* Initialize the ultrasonic sensor 
+** Pre-conditions: None
+** Post-conditions: ultrasonic is initialized
+** Input arguments: specification of the timer which will operate with the US
+** Return: None
+*/
 void US_Init(uint8 Timer_Select)
 {
 	Timer_init (Timer_Select, OF_INT);
-	//Timer_Set_Prescaler(TIMER_0, PRE_1024);
 	GPIO_Direction(PORTA, 1, OUTPUT);
-	SETBIT(SREG,7);  //Enable Global INT
+	GPIO_Direction(PORTA, 6, OUTPUT);
+	Enable_INT(); //Enable Global INT
 	SETBIT(GICR,5); //External INT2 Activation // General Interrupt control register
-	//printf("US_Init Success");
 }
 
-void US_Start (void){
 
-	GPIO_Set_Value(PORTA,1, HIGH); // sending 10us pulse
-	//SETBIT(MCUCR,0);  // configuring INT0 to be +ve edge triggered
-	//SETBIT(MCUCR,1);
-	SETBIT(MCUCSR,6); // configuring INT2 to be +ve edge triggered
-	//SETBIT(GIFR,5); //General Interrupt flag register, flag to check that indicates interrupt occurance
-	_delay_ms(200);
-	CLRBIT(PORTA,1); //GPIO_Set_Value(PORTA,1, LOW);
-	while (int_flag == 0);
-	// 3'alaaat while ((GIFR >> INTF2) == 0);
-//	printf("US_Start Success");
-//DDRA = 0xFF;
-//PORTA=0xFF;
 
+/* Start operating the ultrasonic sensor 
+** Pre-conditions: Ultrasonic is initialized
+** Post-conditions: ultrasonic is started and the distance value is updated with a new one
+** Input arguments: selection of the ultrasonic sensor
+** Return: None
+*/
+void US_Start (uint8 US_Select){
+	if (US_Select == US_FRONT){
+		US_Number = US_FRONT;
+				SETBIT (PORTA, 1); // start sending 10us pulse for the US_FRONT
+				CLRBIT (PORTA, 6); //make sure the US_SIDE is off
+				SETBIT(MCUCSR,6); // configuring INT2 to be +ve edge triggered
+				_delay_ms(20);
+				CLRBIT (PORTA, 1); //GPIO_Set_Value(PORTA,1, LOW); //ending pulse
+				while (int_flag == 0); //function is only terminated in case of the Distance variable is updated
+	}
+	else if (US_Select == US_SIDE){
+		US_Number = US_FRONT;
+				GPIO_Set_Value(PORTA,6, HIGH); // start sending 10us pulse for the US_SIDE
+				CLRBIT (PORTA, 6); //make sure the US_FRONT is off
+				SETBIT(MCUCSR,6); // configuring INT2 to be +ve edge triggered
+				_delay_ms(20);
+				GPIO_Set_Value(PORTA,6, LOW); //ending pulse
+				while (int_flag == 0);
+	}
 }
 
-//uint16 US_Get_Distance (void){
-//uint16 temp; //= Distance;
-//$$ temp = Distance;
-//$$ bta3 = Distance;
-
-
-//PORTB = PORTB | 0b10000000;
-//$$ while (temp == bta3){
-//$$	bta3 = Distance;
-//$$ }
-//	printf("US_Get_Distance Success");
-//PORTB = PORTB | 0b01000000;
-//return Distance;
-
-
-// msh 3ayzo ybd2 3'er lamma el interrupt bta3 el -ve edge yeegy (y3ny el +ve y7sl wb3den el -ve y7sl)
-
-// msh h return 3'er lamma el distance tt'3ayr
-
-//}
 
 
 
+/* external interrupt service routine
+** Pre-conditions: the external interrupt pin senses a +ve edge or -ve edge echo signal
+** Post-conditions: timer reset & distance value is updated
+** Input arguments: None
+** Return: None
+*/
 ISR (__vector_3)
 {
-//printf("I am in ISR");
 int_flag = 0;
 uint8 current_count;
 uint16 counts;
-switch (flag)
+switch (positive_edge_flag)
 	{
 		case POSITIVE_EDGE:
 
 				switch (flag_timer)
 				{
 					case TIMER_0:
-						//PORTB = 0b11010000;
-						//_delay_ms(1000);
-						//PORTB = 0x00;
-						flag = 0;
+						positive_edge_flag = 0;
 						TCNT0 = 0x00;
 						Timer_Set_Prescaler(TIMER_0, PRE_1024);
-						/*if (TCNT0==0)
-							{PORTB = PORTB | 0b11110000;
-							_delay_ms(500);}
-						*/
-						//Timer_Set_Prescaler(TIMER_0, PRE_256);
-
-
 						CLRBIT(MCUCSR,6);  // configuring INT2 to be -ve edge triggered
 						SETBIT(GIFR,5); //INTF2 is set to be able to get a new interrrupt
-						//printf("Timer 0 ISR +ve edge");
-						//PORTB = PORTB | 0b00100000;
-						//PORTB = 0;
-						//_delay_ms(500);
-						//PORTB = 0xFF;
 					break;
 
 					case TIMER_2:
-						flag = 0;
+						positive_edge_flag = 0;
 						TCNT2 = 0x00;
-						//Timer_Set_Prescaler(TIMER_2, PRE_256);
-
+						Timer_Set_Prescaler(TIMER_2, PRE_1024);
 						CLRBIT(MCUCSR,6);  // configuring INT2 to be -ve edge triggered
 						SETBIT(GIFR,5); //INTF2 is set to be able to get a new interrrupt
 					break;
-
-					/*PORTB = PORTB | 0b01110000;
-					_delay_ms(2000);*/
 				}
 		break;
 
 		case NEGATIVE_EDGE:
-			//&& PORTB = PORTB | 0b10110000;
 			int_flag = 1;
 
 			switch (flag_timer)
 			{
 				case TIMER_0:
 					Timer_Set_Prescaler(TIMER_0, PRE_0);
-					//PORTB = PORTB | 0b11110000;
-					//&& _delay_ms(10000);
-					//&& PORTB = 0;
 					current_count = (TCNT0);   //GPIO_Get_Reg(TCNT0);
 					counts = current_count + (256*overflows_0);
-					Distance = (34000 * PRE_1024*counts)/16000000;
+					if (US_Number == US_FRONT){
+						Distance_Front = (34300 * PRE_1024*counts)/32000000;
+					}
+					else if (US_Number == US_SIDE){
+						Distance_Side = (34300 * PRE_1024*counts)/32000000;
+					}
 					overflows_0 = 0;
 					TCNT0 = 0x00;
-					flag =1;
+					positive_edge_flag =1;
 					SETBIT(GIFR,5); //INTF2 is set to be able to get a new interrrupt
-					//printf("Timer 0 ISR -ve edge");
-					//PORTB = PORTB | 0b00000000;
-					//&& _delay_ms(50000);
-
-			//&& PORTB = PORTB | 0b11110000;
-			//&& _delay_ms(1000);
-
 				break;
 
 				case TIMER_2:
+					Timer_Set_Prescaler(TIMER_2, PRE_0);
 					current_count = (TCNT2);
 					counts = current_count + (256*overflows_2);
-					Distance = (34000 * PRE_256*counts)/16000000;
+					if (US_Number == US_FRONT){
+						Distance_Front = (34300 * PRE_1024*counts)/32000000;
+					}
+					else if (US_Number == US_SIDE){
+						Distance_Side = (34300 * PRE_1024*counts)/32000000;
+					}
 					overflows_2 = 0;
 					TCNT2 = 0x00;
-					flag =1;
+					positive_edge_flag =1;
 					SETBIT(GIFR,5); //INTF2 is set to be able to get a new interrrupt
-
 				break;
 			}
 
 		break;
-
 	}
 }

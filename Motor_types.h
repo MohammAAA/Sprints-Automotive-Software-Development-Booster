@@ -22,7 +22,7 @@
 #define PIN_2A	6
 #define PIN_2B	7
 
-#define MAX_SPEED 255
+#define MAX_SPEED 100
 
 
 
