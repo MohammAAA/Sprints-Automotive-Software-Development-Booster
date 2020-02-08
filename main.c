@@ -55,8 +55,8 @@ int main()
  				//Change motor speed according to each phase using Speed_Flag
  				Motor_State (MOTOR_1, FORWARD);
  				Motor_State (MOTOR_2, FORWARD);
- 				Motor_Speed_Control(MOTOR_1, 30 /*Speed_Flag*/);
- 				Motor_Speed_Control(MOTOR_2, 30	 /*10Speed_Flag*/);
+ 				Motor_Speed_Control(MOTOR_1, Speed_Flag);
+ 				Motor_Speed_Control(MOTOR_2, Speed_Flag);
  			}
  		}
 		Start_Scheduler();
@@ -72,15 +72,12 @@ int main()
 return 0;
 }
 
-ISR (__vector_11){ //Timer0 Overflow
+/* Timer0 Overflow interrupt service routine */
+ISR (__vector_11){ 
 	overflows_0++;
-	//TCNT0 = 0x00;
-	//PORTB = ~PORTB;
-	//_delay_ms(500);
-
 }
 
-ISR (__vector_5){ //Timer2 Overflow
+/* Timer0 Overflow interrupt service routine */
+ISR (__vector_5){
 	overflows_2++;
-	//TCNT2 = 0x00;
 }
