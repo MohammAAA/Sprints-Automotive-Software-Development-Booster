@@ -20,55 +20,52 @@ extern volatile uint16 overflows_2;
 ISR (__vector_11);
 ISR (__vector_5);
 
-int main()
+int main(void)
 {
 	US_Init(TIMER_0);
 	Motor_Init();
 	PWM_Init();
-	Set_PWM_Prescaling_Value(1024);
-
-	while(1)
-	{
-		//Schedules the two main function calls with each timer interrupt flag (overflows_2)
- 		void Start_Scheduler ()
- 		{
- 			Check_Distance_Change();
-
- 			if (Ob_Removed==1)
- 			{
- 					if ((US_Reading >= 200) && (US_Reading <=220))
- 					{
- 						Get_New_Phase_Info();
- 						Ob_Removed = 0;
- 					}
-
- 				if ((overflows_0) && (Ob_Removed == 0))
- 				{
- 					Check_Distance_Change();
- 				}
-
- 				if ((overflows_0) && ((US_Reading >= 190) && (US_Reading <=210)))
- 				{
- 					Get_New_Phase_Info();
- 					Ob_Removed = 0;
- 				}
- 				//Change motor speed according to each phase using Speed_Flag
- 				Motor_State (MOTOR_1, FORWARD);
- 				Motor_State (MOTOR_2, FORWARD);
- 				Motor_Speed_Control(MOTOR_1, Speed_Flag);
- 				Motor_Speed_Control(MOTOR_2, Speed_Flag);
- 			}
- 		}
-		Start_Scheduler();
-
-		if (Distance_Front <= 30)
-				{
-					//stop motor
-			Motor_Speed_Control(MOTOR_1,0);
-			Motor_Speed_Control(MOTOR_2,0);
-				}
-
+	Set_PWM_Prescaling_Value(1024)
+		
+while(1)
+{
+	
+	US_Start(US_FRONT);
+    	if (Distance_Front>FRONT_LIMIT){
+	// MOTOR should be moving forward
+	// OPERATE MOTOR
+	Motor_State (Motor_1, FORWARD);
+	Motor_State (Motor_2, FORWARD);
+	Motor_Speed_Control(MOTOR_1, 30);
+	Motor_Speed_Control(MOTOR_2, 30);
+		break;
 	}
+	
+	
+	// The code will not pass US_Start unless it gets a value for distance, due to the while loop in US_Start function which checks the flag
+	// int_flag which is only changed from 1 to 0 in the negative edge cycle of the Interrupt
+	
+	else if (Distance_Front<FRONT_LIMIT)
+	{
+		US_Start(US_SIDE);
+		Motor_State (Motor_1, STOP);
+		Motor_State (Motor_2, STOP);
+	}
+	// ROTATE LEFT
+	if (Distance_Side>SIDE_MAX && Distance_Front<FRONT_LIMIT)
+	{
+		US_Start(US_FRONT);
+		// MOTOR ROTATES TO THE LEFT
+		Motor_Turn_Left();		
+	}
+	
+	if(Distance_Front<FRONT_LIMIT && Distance_Side<SIDE_LIMIT)
+	{
+		US_Start(US_FRONT);
+		//MOTOR ROTATES TO THE RIGHT	.
+		Motor_Turn_Right();
+	}
+}
 return 0;
 }
 
